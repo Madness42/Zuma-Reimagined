@@ -1,9 +1,7 @@
 import pygame
 from pathing import Path
 from balls import BallsManager
-
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+from constants import *
 
 
 class GameManager:
@@ -16,19 +14,19 @@ class GameManager:
     def play(self):
         running = True
         path = Path(self._level)
-        balls_manager = BallsManager(10)
+        balls_manager = BallsManager(100)
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
 
-            self._screen.fill((0, 0, 0))
+            self._screen.fill((50, 50, 50))
 
             balls_manager.advance()
             balls_manager.update_position(path)
-            balls_manager.draw(self._screen)
+            balls_manager.draw(self._screen, path)
 
             pygame.display.update()
-            self._clock.tick(60)
+            self._clock.tick(FPS)
 
         pygame.quit()

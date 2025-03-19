@@ -21,14 +21,22 @@ class Path:
         return self._whole_length
 
     def progress_to_position(self, progress: float):
+        return self.__position_or_velocity(progress, True)
+
+    def progress_to_normal_velocity(self, progress: float):
+        return self.__position_or_velocity(progress, False)
+
+    def __position_or_velocity(self, progress: float, return_position: bool):
         cumulative_length = 0
         count = 0
         segment_progress = progress
         if progress < 0:
-            return pygame.math.Vector2(-1000, -1000)
+            if return_position:
+                return pygame.math.Vector2(-1000, -1000)
+            return pygame.math.Vector2(1, 0)
         for segment in self._lengths:
             cumulative_length += segment
-            if progress > cumulative_length:
+            if progress >= cumulative_length:
                 count += 1
                 segment_progress -= segment
                 continue
@@ -36,4 +44,7 @@ class Path:
                 * (segment_progress / segment)
             y = self._points[count][1] + (self._points[count + 1][1] - self._points[count][1])\
                 * (segment_progress / segment)
-            return pygame.math.Vector2(x, y)
+            if return_position:
+                return pygame.math.Vector2(x, y)
+            sector_end = pygame.math.Vector2(self._points[count + 1][0], self._points[count + 1][1])
+            return (sector_end - pygame.math.Vector2(x, y)).normalize()
